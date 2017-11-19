@@ -1,0 +1,217 @@
+
+<html lang='en'>
+	<head>
+		<title>My little friend's alarm clock</title>
+		
+		<link rel='stylesheet' type='text/css' href='alarm.css'>
+	</head>
+	<body>
+		<div id='main-container'>
+			<h2 id='clock'></h2>
+		</div>
+
+		<div id='alarm-container'>  
+			<h3>Set Alarm Time</h3>
+				<label>
+					<div>
+					<select id='pacinohrs' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+					<select id='pacinomins' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+					<select id='pacinosecs' ></select>
+					</div>
+				</label>
+				<label>
+					<div>
+						<select id="ampm">  
+							<option value="AM">AM</option>
+							<option value="PM">PM</option>
+						</select>
+					</div>
+				</label>
+				</div>
+		</div>
+
+		<div id='buttonHolder'>
+			<div>
+				<button  id='setButton' onClick='alarmSet()'>Set This Bad Boy</button>
+			</div>
+
+			<div>
+				<button  id='clearButton' onClick='alarmClear()'>Shut it Down</button>
+			</div>
+		</div>
+
+	</body>
+</html>
+<script type="text/javascript">
+
+var sound = new 
+Audio("http://www.wavsource.com/snds_2017-09-17_1751672946049674/movies/misc/scarface_say_hello.wav"); 
+// This sound file will continue to play until the alarm is cleared
+		sound.loop = true;
+
+var h2 = document.getElementById('clock');  
+
+// We want to display the current time down to the second
+var currentTime = setInterval(function(){   
+	var date = new Date();
+	
+	var hours = (12 - (date.getHours()));  
+	// var hours = date.getHours();       
+	
+	var minutes = date.getMinutes();
+	
+	var seconds = date.getSeconds();
+	
+	var ampm = (date.getHours()) < 12 ? 'AM' : 'PM';  //If the hour is less than 12, set it to AM, otherwise set it to PM.
+
+
+	//This will allow me to convert military time to standard time. 
+
+	if (hours < 0) {          //a negative multiplied by -1 makes it positive
+		hours = hours * -1;
+	} else if (hours == 00) {
+		hours = 12;
+	} else {
+		hours = hours;
+	}
+
+	
+	h2.textContent = addZero(hours) + ":" + addZero(minutes) + ":" + addZero(seconds) + "" + ampm;   //To the time, we will add the formatting necessary to make it presentable and easier to read. 
+	
+},1000);
+
+
+/*functions to get hour, min, secs, 
+  am or pm, add zero, set alarm time and sound, clear alarm
+*/
+
+function addZero(time) {
+
+		return (time < 10) ? "0" + time : time;   //If the unit of time is less than ten, we want to add a zero in the front. We will add this function to our hours, minutes, and seconds.
+	
+}
+
+function hoursMenu(){
+
+	var select = document.getElementById('pacinohrs');  // This will allow us to select from a list of 12 hour options
+	var hrs = 12
+
+	for (i=1; i <= hrs; i++) {
+		select.options[select.options.length] = new Option( i < 10 ? "0" + i : i, i);    //We are selecting our desired hour from the index
+		
+	}
+}
+hoursMenu();
+
+function minMenu(){
+
+	var select = document.getElementById('pacinomins');   // // This will allow us to select from a list of 59 minute options
+	var min = 59;
+
+	for (i=0; i <= min; i++) {
+		select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);     //We are selecting our desired minute from the index
+	}
+}
+minMenu();
+
+function secMenu(){
+
+	var select = document.getElementById('pacinosecs');   // This will allow us to select from a list of 59 second options
+	var sec = 59;
+
+	for (i=0; i <= sec; i++) {
+		select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);  //We are selecting our desired second from the index 
+	}
+}
+secMenu();
+
+
+function alarmSet() {
+
+	var hr = document.getElementById('pacinohrs');
+	
+	var min = document.getElementById('pacinomins');
+	
+	var sec = document.getElementById('pacinosecs');
+	
+	var ap = document.getElementById('ampm');
+    
+
+    var selectedHour = hr.options[hr.selectedIndex].value;
+    var selectedMin = min.options[min.selectedIndex].value;
+    var selectedSec = sec.options[sec.selectedIndex].value;
+    var selectedAP = ap.options[ap.selectedIndex].value;
+
+    var alarmTime = addZero(selectedHour) + ":" + addZero(selectedMin) + ":" + addZero(selectedSec) + selectedAP;
+    console.log('alarmTime:' + alarmTime);
+
+    document.getElementById('pacinohrs').disabled = true;
+	document.getElementById('pacinomins').disabled = true;
+	document.getElementById('pacinosecs').disabled = true;
+	document.getElementById('ampm').disabled = true;
+
+
+//when alarmtime is equal to currenttime then play a sound
+	var h2 = document.getElementById('clock');
+
+/*we write a function to calcutate the current time 
+then compare it to the alarmtime and play a sound when they are equal
+*/
+
+setInterval(function(){
+
+	var date = new Date();
+	
+	var hours = (12 - (date.getHours()));
+	// var hours = date.getHours();
+	
+	var minutes = date.getMinutes();
+	
+	var seconds = date.getSeconds();
+	
+	var ampm = (date.getHours()) < 12 ? 'AM' : 'PM';
+
+
+	//convert military time to standard time
+
+	if (hours < 0) {
+		hours = hours * -1;
+	} else if (hours == 00) {
+		hours = 12;
+	} else {
+		hours = hours;
+	}
+	
+	var currentTime = h2.textContent = addZero(hours) + ":" + addZero(minutes) + ":" + addZero(seconds) + "" + ampm;
+	
+
+	if (alarmTime == currentTime) {
+		sound.play();
+		}
+
+},1000);
+
+
+	// console.log('currentTime:' + currentTime);	
+
+}
+
+
+function alarmClear() {
+
+	document.getElementById('pacinohrs').disabled = false;
+	document.getElementById('pacinomins').disabled = false;
+	document.getElementById('pacinosecs').disabled = false;
+	document.getElementById('ampm').disabled = false;
+	sound.pause();
+}
+
+</script>
